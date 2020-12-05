@@ -1,0 +1,79 @@
+<div>
+    <h2 id="page-heading">
+        <span>Signatures</span>
+
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-signature" [routerLink]="['/signature/new']">
+            <fa-icon icon="plus"></fa-icon>
+            <span>
+            Create a new Signature
+            </span>
+        </button>
+    </h2>
+
+    <jhi-alert-error></jhi-alert-error>
+
+    <jhi-alert></jhi-alert>
+
+    <div class="alert alert-warning" id="no-result" *ngIf="signatures?.length === 0">
+        <span>No signatures found</span>
+    </div>
+
+    <div class="table-responsive" id="entities" *ngIf="signatures && signatures.length > 0">
+        <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+                <tr>
+                    <th scope="col" ><span>ID</span></th>
+                    <th scope="col" ><span>Email</span></th>
+                    <th scope="col" ><span>Name</span></th>
+                    <th scope="col" ><span>Reply Email</span></th>
+                    <th scope="col" ><span>Reply Name</span></th>
+                    <th scope="col" ><span>Status</span></th>
+                    <th scope="col" ><span>Signature Validation</span></th>
+                    <th scope="col" ><span>Owner</span></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let signature of signatures ;trackBy: trackId">
+                    <td><a [routerLink]="['/signature', signature.id, 'view']">{{ signature.id }}</a></td>
+                    <td>{{ signature.email }}</td>
+                    <td>{{ signature.name }}</td>
+                    <td>{{ signature.replyEmail }}</td>
+                    <td>{{ signature.replyName }}</td>
+                    <td>{{ signature.status }}</td>
+                    <td>
+                        <div *ngIf="signature.signatureValidationId">
+                            <a [routerLink]="['/signature-validation', signature.signatureValidationId , 'view']" >{{ signature.signatureValidationId }}</a>
+                        </div>
+                    </td>
+                    <td>
+                        {{ signature.ownerId }}
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group">
+                            <button type="submit"
+                                    [routerLink]="['/signature', signature.id, 'view']"
+                                    class="btn btn-info btn-sm">
+                                <fa-icon icon="eye"></fa-icon>
+                                <span class="d-none d-md-inline">View</span>
+                            </button>
+
+                            <button type="submit"
+                                    [routerLink]="['/signature', signature.id, 'edit']"
+                                    class="btn btn-primary btn-sm">
+                                <fa-icon icon="pencil-alt"></fa-icon>
+                                <span class="d-none d-md-inline">Edit</span>
+                            </button>
+
+                            <button type="submit" (click)="delete(signature)"
+                                    class="btn btn-danger btn-sm">
+                                <fa-icon icon="times"></fa-icon>
+                                <span class="d-none d-md-inline">Delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

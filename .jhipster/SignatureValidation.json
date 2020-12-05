@@ -1,0 +1,42 @@
+{
+  "name": "SignatureValidation",
+  "fields": [
+    {
+      "fieldName": "otp",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "createdtime",
+      "fieldType": "ZonedDateTime"
+    },
+    {
+      "fieldName": "validTill",
+      "fieldType": "ZonedDateTime"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "ValidationStatus",
+      "fieldValues": "VARIFIED,PENDING,REJECTED"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-one",
+      "otherEntityName": "signature",
+      "otherEntityRelationshipName": "signatureValidation",
+      "relationshipName": "signature",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20201205063453",
+  "entityTableName": "signature_validation",
+  "dto": "mapstruct",
+  "pagination": "no",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

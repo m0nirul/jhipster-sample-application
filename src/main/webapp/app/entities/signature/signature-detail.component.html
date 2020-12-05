@@ -1,0 +1,56 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="signature">
+            <h2><span>Signature</span> {{ signature.id }}</h2>
+
+            <hr>
+
+            <jhi-alert-error></jhi-alert-error>
+
+            <dl class="row-md jh-entity-details">
+                <dt><span>Email</span></dt>
+                <dd>
+                    <span>{{ signature.email }}</span>
+                </dd>
+                <dt><span>Name</span></dt>
+                <dd>
+                    <span>{{ signature.name }}</span>
+                </dd>
+                <dt><span>Reply Email</span></dt>
+                <dd>
+                    <span>{{ signature.replyEmail }}</span>
+                </dd>
+                <dt><span>Reply Name</span></dt>
+                <dd>
+                    <span>{{ signature.replyName }}</span>
+                </dd>
+                <dt><span>Status</span></dt>
+                <dd>
+                    <span>{{ signature.status }}</span>
+                </dd>
+                <dt><span>Signature Validation</span></dt>
+                <dd>
+                    <div *ngIf="signature.signatureValidationId">
+                        <a [routerLink]="['/signature-validation', signature.signatureValidationId, 'view']">{{ signature.signatureValidationId }}</a>
+                    </div>
+                </dd>
+                <dt><span>Owner</span></dt>
+                <dd>
+                    {{ signature.ownerId }}
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/signature', signature.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

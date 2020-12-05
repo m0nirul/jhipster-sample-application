@@ -1,0 +1,97 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+            <h2 id="jhi-signature-heading">Create or edit a Signature</h2>
+
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+
+                <div class="form-group" [hidden]="!editForm.get('id')!.value">
+                    <label for="id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" formControlName="id" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_email">Email</label>
+                    <input type="text" class="form-control" name="email" id="field_email"
+                           formControlName="email"/>
+                    <div *ngIf="editForm.get('email')!.invalid && (editForm.get('email')!.dirty || editForm.get('email')!.touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('email')?.errors?.required">
+                        This field is required.
+                        </small>
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('email')?.errors?.pattern">
+                            This field should follow pattern for "Email".
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_name">Name</label>
+                    <input type="text" class="form-control" name="name" id="field_name"
+                           formControlName="name"/>
+                    <div *ngIf="editForm.get('name')!.invalid && (editForm.get('name')!.dirty || editForm.get('name')!.touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('name')?.errors?.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_replyEmail">Reply Email</label>
+                    <input type="text" class="form-control" name="replyEmail" id="field_replyEmail"
+                           formControlName="replyEmail"/>
+                    <div *ngIf="editForm.get('replyEmail')!.invalid && (editForm.get('replyEmail')!.dirty || editForm.get('replyEmail')!.touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('replyEmail')?.errors?.pattern">
+                            This field should follow pattern for "Reply Email".
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_replyName">Reply Name</label>
+                    <input type="text" class="form-control" name="replyName" id="field_replyName"
+                           formControlName="replyName"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_status">Status</label>
+                    <select class="form-control" name="status" formControlName="status" id="field_status">
+                        <option value="VARIFIED">VARIFIED</option>
+                        <option value="PENDING">PENDING</option>
+                        <option value="REJECTED">REJECTED</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_signatureValidation">Signature Validation</label>
+                    <select class="form-control" id="field_signatureValidation" name="signatureValidation" formControlName="signatureValidationId">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="signatureValidationOption.id" *ngFor="let signatureValidationOption of signaturevalidations; trackBy: trackById">{{ signatureValidationOption.id }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_owner">Owner</label>
+                    <select class="form-control" id="field_owner" name="owner" formControlName="ownerId">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="userOption.id" *ngFor="let userOption of users; trackBy: trackById">{{ userOption.id }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
+                    <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+                </button>
+
+                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

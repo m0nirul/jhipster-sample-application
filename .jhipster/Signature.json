@@ -1,0 +1,60 @@
+{
+  "name": "Signature",
+  "fields": [
+    {
+      "fieldName": "email",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "pattern"],
+      "fieldValidateRulesPattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "replyEmail",
+      "fieldType": "String",
+      "fieldValidateRules": ["pattern"],
+      "fieldValidateRulesPattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+    },
+    {
+      "fieldName": "replyName",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "ValidationStatus",
+      "fieldValues": "VARIFIED,PENDING,REJECTED"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-one",
+      "otherEntityName": "signatureValidation",
+      "otherEntityRelationshipName": "signature",
+      "relationshipName": "signatureValidation",
+      "otherEntityField": "id",
+      "ownerSide": true,
+      "useJPADerivedIdentifier": true
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "user",
+      "otherEntityRelationshipName": "signature",
+      "relationshipName": "owner",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20201205063353",
+  "entityTableName": "signature",
+  "dto": "mapstruct",
+  "pagination": "no",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

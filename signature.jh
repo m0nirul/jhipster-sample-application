@@ -1,0 +1,29 @@
+entity Signature {
+    email String required pattern(/^[^@\s]+@[^@\s]+\.[^@\s]+$/) 
+    name String required
+    replyEmail String pattern(/^[^@\s]+@[^@\s]+\.[^@\s]+$/) 
+    replyName String
+    status ValidationStatus
+}
+entity SignatureValidation {
+	otp String
+    createdtime ZonedDateTime
+    validTill ZonedDateTime
+    status ValidationStatus
+}
+enum ValidationStatus {
+	VARIFIED, PENDING, REJECTED
+}
+relationship ManyToOne {
+	Signature{owner} to User
+}
+relationship OneToOne {
+	Signature to SignatureValidation with jpaDerivedIdentifier 
+}
+// Set pagination options
+// paginate * with infinite-scroll
+
+dto * with mapstruct
+
+
+service all with serviceImpl

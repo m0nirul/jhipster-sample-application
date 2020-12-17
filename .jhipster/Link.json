@@ -1,0 +1,25 @@
+{
+  "name": "Link",
+  "fields": [
+    {
+      "fieldName": "zonedStartTime",
+      "fieldType": "ZonedDateTime"
+    },
+    {
+      "fieldName": "zonedDateTime",
+      "fieldType": "ZonedDateTime"
+    }
+  ],
+  "relationships": [],
+  "changelogDate": "20201217171551",
+  "entityTableName": "link",
+  "dto": "mapstruct",
+  "pagination": "no",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

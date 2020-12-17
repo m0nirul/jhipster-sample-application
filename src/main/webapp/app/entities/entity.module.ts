@@ -13,6 +13,10 @@ import { RouterModule } from '@angular/router';
         loadChildren: () =>
           import('./signature-validation/signature-validation.module').then(m => m.JhipsterSampleApplicationSignatureValidationModule),
       },
+      {
+        path: 'link',
+        loadChildren: () => import('./link/link.module').then(m => m.JhipsterSampleApplicationLinkModule),
+      },
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ]),
   ],

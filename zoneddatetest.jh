@@ -1,0 +1,12 @@
+entity Link {
+    zonedStartTime ZonedDateTime
+    zonedDateTime ZonedDateTime
+}
+
+// Set pagination options
+// paginate * with infinite-scroll
+
+dto * with mapstruct
+
+
+service all with serviceImpl

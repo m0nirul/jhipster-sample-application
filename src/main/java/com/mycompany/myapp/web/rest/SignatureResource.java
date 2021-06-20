@@ -1,23 +1,23 @@
 package com.mycompany.myapp.web.rest;
 
+import com.mycompany.myapp.repository.SignatureRepository;
 import com.mycompany.myapp.service.SignatureService;
-import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
 import com.mycompany.myapp.service.dto.SignatureDTO;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.ResponseUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link com.mycompany.myapp.domain.Signature}.
@@ -35,8 +35,11 @@ public class SignatureResource {
 
     private final SignatureService signatureService;
 
-    public SignatureResource(SignatureService signatureService) {
+    private final SignatureRepository signatureRepository;
+
+    public SignatureResource(SignatureService signatureService, SignatureRepository signatureRepository) {
         this.signatureService = signatureService;
+        this.signatureRepository = signatureRepository;
     }
 
     /**
@@ -52,34 +55,84 @@ public class SignatureResource {
         if (signatureDTO.getId() != null) {
             throw new BadRequestAlertException("A new signature cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        if (Objects.isNull(signatureDTO.getSignatureValidationId())) {
+        if (Objects.isNull(signatureDTO.getSignatureValidation())) {
             throw new BadRequestAlertException("Invalid association value provided", ENTITY_NAME, "null");
         }
         SignatureDTO result = signatureService.save(signatureDTO);
-        return ResponseEntity.created(new URI("/api/signatures/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/signatures/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /signatures} : Updates an existing signature.
+     * {@code PUT  /signatures/:id} : Updates an existing signature.
      *
+     * @param id the id of the signatureDTO to save.
      * @param signatureDTO the signatureDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated signatureDTO,
      * or with status {@code 400 (Bad Request)} if the signatureDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the signatureDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/signatures")
-    public ResponseEntity<SignatureDTO> updateSignature(@Valid @RequestBody SignatureDTO signatureDTO) throws URISyntaxException {
-        log.debug("REST request to update Signature : {}", signatureDTO);
+    @PutMapping("/signatures/{id}")
+    public ResponseEntity<SignatureDTO> updateSignature(
+        @PathVariable(value = "id", required = false) final Long id,
+        @Valid @RequestBody SignatureDTO signatureDTO
+    ) throws URISyntaxException {
+        log.debug("REST request to update Signature : {}, {}", id, signatureDTO);
         if (signatureDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, signatureDTO.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!signatureRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         SignatureDTO result = signatureService.save(signatureDTO);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, signatureDTO.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /signatures/:id} : Partial updates given fields of an existing signature, field will ignore if it is null
+     *
+     * @param id the id of the signatureDTO to save.
+     * @param signatureDTO the signatureDTO to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated signatureDTO,
+     * or with status {@code 400 (Bad Request)} if the signatureDTO is not valid,
+     * or with status {@code 404 (Not Found)} if the signatureDTO is not found,
+     * or with status {@code 500 (Internal Server Error)} if the signatureDTO couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/signatures/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<SignatureDTO> partialUpdateSignature(
+        @PathVariable(value = "id", required = false) final Long id,
+        @NotNull @RequestBody SignatureDTO signatureDTO
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update Signature partially : {}, {}", id, signatureDTO);
+        if (signatureDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, signatureDTO.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!signatureRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<SignatureDTO> result = signatureService.partialUpdate(signatureDTO);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, signatureDTO.getId().toString())
+        );
     }
 
     /**
@@ -116,6 +169,9 @@ public class SignatureResource {
     public ResponseEntity<Void> deleteSignature(@PathVariable Long id) {
         log.debug("REST request to delete Signature : {}", id);
         signatureService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

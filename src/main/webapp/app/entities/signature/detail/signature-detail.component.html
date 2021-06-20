@@ -1,0 +1,60 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="signature">
+      <h2 data-cy="signatureDetailsHeading"><span>Signature</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ signature.id }}</span>
+        </dd>
+        <dt><span>Email</span></dt>
+        <dd>
+          <span>{{ signature.email }}</span>
+        </dd>
+        <dt><span>Name</span></dt>
+        <dd>
+          <span>{{ signature.name }}</span>
+        </dd>
+        <dt><span>Reply Email</span></dt>
+        <dd>
+          <span>{{ signature.replyEmail }}</span>
+        </dd>
+        <dt><span>Reply Name</span></dt>
+        <dd>
+          <span>{{ signature.replyName }}</span>
+        </dd>
+        <dt><span>Status</span></dt>
+        <dd>
+          <span>{{ signature.status }}</span>
+        </dd>
+        <dt><span>Signature Validation</span></dt>
+        <dd>
+          <div *ngIf="signature.signatureValidation">
+            <a [routerLink]="['/signature-validation', signature.signatureValidation?.id, 'view']">{{
+              signature.signatureValidation?.id
+            }}</a>
+          </div>
+        </dd>
+        <dt><span>Owner</span></dt>
+        <dd>
+          <span>{{ signature.owner?.id }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/signature', signature.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -3,10 +3,9 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    
     <!--
         Added the entity Link.
     -->
@@ -15,21 +14,18 @@
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="zoned_start_time" type="datetime">
+            <column name="zoned_start_time" type="${datetimeType}">
                 <constraints nullable="true" />
             </column>
-            <column name="zoned_date_time" type="datetime">
+            <column name="zoned_date_time" type="${datetimeType}">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="link" columnName="zoned_start_time" columnDataType="datetime"/>
-        <dropDefaultValue tableName="link" columnName="zoned_date_time" columnDataType="datetime"/>
+        <dropDefaultValue tableName="link" columnName="zoned_start_time" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="link" columnName="zoned_date_time" columnDataType="${datetimeType}"/>
     </changeSet>
 
-    <changeSet id="20201217171551-1-relations" author="jhipster">
-
-    </changeSet>
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--
@@ -46,10 +42,9 @@
                   separator=";"
                   tableName="link">
             <column name="id" type="numeric"/>
-            <column name="zoned_start_time" type="datetime"/>
-            <column name="zoned_date_time" type="datetime"/>
+            <column name="zoned_start_time" type="${datetimeType}"/>
+            <column name="zoned_date_time" type="${datetimeType}"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>
-
 </databaseChangeLog>

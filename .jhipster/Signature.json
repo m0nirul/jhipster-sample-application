@@ -36,7 +36,8 @@
       "relationshipName": "signatureValidation",
       "otherEntityField": "id",
       "ownerSide": true,
-      "useJPADerivedIdentifier": true
+      "useJPADerivedIdentifier": true,
+      "id": true
     },
     {
       "relationshipType": "many-to-one",

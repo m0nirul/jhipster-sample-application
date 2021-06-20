@@ -1,15 +1,14 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
 
-import { JhipsterSampleApplicationSharedModule } from 'app/shared/shared.module';
-import { SignatureValidationComponent } from './signature-validation.component';
-import { SignatureValidationDetailComponent } from './signature-validation-detail.component';
-import { SignatureValidationUpdateComponent } from './signature-validation-update.component';
-import { SignatureValidationDeleteDialogComponent } from './signature-validation-delete-dialog.component';
-import { signatureValidationRoute } from './signature-validation.route';
+import { SharedModule } from 'app/shared/shared.module';
+import { SignatureValidationComponent } from './list/signature-validation.component';
+import { SignatureValidationDetailComponent } from './detail/signature-validation-detail.component';
+import { SignatureValidationUpdateComponent } from './update/signature-validation-update.component';
+import { SignatureValidationDeleteDialogComponent } from './delete/signature-validation-delete-dialog.component';
+import { SignatureValidationRoutingModule } from './route/signature-validation-routing.module';
 
 @NgModule({
-  imports: [JhipsterSampleApplicationSharedModule, RouterModule.forChild(signatureValidationRoute)],
+  imports: [SharedModule, SignatureValidationRoutingModule],
   declarations: [
     SignatureValidationComponent,
     SignatureValidationDetailComponent,
@@ -18,4 +17,4 @@ import { signatureValidationRoute } from './signature-validation.route';
   ],
   entryComponents: [SignatureValidationDeleteDialogComponent],
 })
-export class JhipsterSampleApplicationSignatureValidationModule {}
+export class SignatureValidationModule {}

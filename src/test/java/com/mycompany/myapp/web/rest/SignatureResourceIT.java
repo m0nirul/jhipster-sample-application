@@ -1,49 +1,47 @@
 package com.mycompany.myapp.web.rest;
 
-import com.mycompany.myapp.JhipsterSampleApplicationApp;
-import com.mycompany.myapp.config.TestSecurityConfiguration;
-import com.mycompany.myapp.domain.Signature;
-import com.mycompany.myapp.domain.SignatureValidation;
-import com.mycompany.myapp.repository.SignatureRepository;
-import com.mycompany.myapp.service.SignatureService;
-import com.mycompany.myapp.service.dto.SignatureDTO;
-import com.mycompany.myapp.service.mapper.SignatureMapper;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.mycompany.myapp.IntegrationTest;
+import com.mycompany.myapp.domain.Signature;
+import com.mycompany.myapp.domain.SignatureValidation;
 import com.mycompany.myapp.domain.enumeration.ValidationStatus;
+import com.mycompany.myapp.repository.SignatureRepository;
+import com.mycompany.myapp.service.dto.SignatureDTO;
+import com.mycompany.myapp.service.mapper.SignatureMapper;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link SignatureResource} REST controller.
  */
-@SpringBootTest(classes = { JhipsterSampleApplicationApp.class, TestSecurityConfiguration.class })
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class SignatureResourceIT {
+class SignatureResourceIT {
 
-    private static final String DEFAULT_EMAIL = "V@*Q.wGq#\\";
-    private static final String UPDATED_EMAIL = "?_V@>o+.o:";
+    private static final String DEFAULT_EMAIL = "'@]d.*)";
+    private static final String UPDATED_EMAIL = ":x@;q'x.i3C+j^";
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
-    private static final String DEFAULT_REPLY_EMAIL = "Er7N@*R..";
-    private static final String UPDATED_REPLY_EMAIL = "'J7OM@a.Y";
+    private static final String DEFAULT_REPLY_EMAIL = "L4@o8'.:q}{9";
+    private static final String UPDATED_REPLY_EMAIL = "2n.?p@[+.wqnu";
 
     private static final String DEFAULT_REPLY_NAME = "AAAAAAAAAA";
     private static final String UPDATED_REPLY_NAME = "BBBBBBBBBB";
@@ -51,14 +49,17 @@ public class SignatureResourceIT {
     private static final ValidationStatus DEFAULT_STATUS = ValidationStatus.VARIFIED;
     private static final ValidationStatus UPDATED_STATUS = ValidationStatus.PENDING;
 
+    private static final String ENTITY_API_URL = "/api/signatures";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private SignatureRepository signatureRepository;
 
     @Autowired
     private SignatureMapper signatureMapper;
-
-    @Autowired
-    private SignatureService signatureService;
 
     @Autowired
     private EntityManager em;
@@ -93,6 +94,7 @@ public class SignatureResourceIT {
         signature.setSignatureValidation(signatureValidation);
         return signature;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -126,13 +128,17 @@ public class SignatureResourceIT {
 
     @Test
     @Transactional
-    public void createSignature() throws Exception {
+    void createSignature() throws Exception {
         int databaseSizeBeforeCreate = signatureRepository.findAll().size();
         // Create the Signature
         SignatureDTO signatureDTO = signatureMapper.toDto(signature);
-        restSignatureMockMvc.perform(post("/api/signatures").with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(signatureDTO)))
+        restSignatureMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(signatureDTO))
+            )
             .andExpect(status().isCreated());
 
         // Validate the Signature in the database
@@ -151,17 +157,21 @@ public class SignatureResourceIT {
 
     @Test
     @Transactional
-    public void createSignatureWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = signatureRepository.findAll().size();
-
+    void createSignatureWithExistingId() throws Exception {
         // Create the Signature with an existing ID
         signature.setId(1L);
         SignatureDTO signatureDTO = signatureMapper.toDto(signature);
 
+        int databaseSizeBeforeCreate = signatureRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restSignatureMockMvc.perform(post("/api/signatures").with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(signatureDTO)))
+        restSignatureMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(signatureDTO))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Signature in the database
@@ -171,7 +181,7 @@ public class SignatureResourceIT {
 
     @Test
     @Transactional
-    public void updateSignatureMapsIdAssociationWithNewId() throws Exception {
+    void updateSignatureMapsIdAssociationWithNewId() throws Exception {
         // Initialize the database
         signatureRepository.saveAndFlush(signature);
         int databaseSizeBeforeCreate = signatureRepository.findAll().size();
@@ -183,24 +193,29 @@ public class SignatureResourceIT {
 
         // Load the signature
         Signature updatedSignature = signatureRepository.findById(signature.getId()).get();
+        assertThat(updatedSignature).isNotNull();
         // Disconnect from session so that the updates on updatedSignature are not directly saved in db
         em.detach(updatedSignature);
 
         // Update the SignatureValidation with new association value
         updatedSignature.setSignatureValidation(signatureValidation);
         SignatureDTO updatedSignatureDTO = signatureMapper.toDto(updatedSignature);
+        assertThat(updatedSignatureDTO).isNotNull();
 
         // Update the entity
-        restSignatureMockMvc.perform(put("/api/signatures").with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedSignatureDTO)))
+        restSignatureMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedSignatureDTO.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedSignatureDTO))
+            )
             .andExpect(status().isOk());
 
         // Validate the Signature in the database
         List<Signature> signatureList = signatureRepository.findAll();
         assertThat(signatureList).hasSize(databaseSizeBeforeCreate);
         Signature testSignature = signatureList.get(signatureList.size() - 1);
-
         // Validate the id for MapsId, the ids must be same
         // Uncomment the following line for assertion. However, please note that there is a known issue and uncommenting will fail the test.
         // Please look at https://github.com/jhipster/generator-jhipster/issues/9100. You can modify this test as necessary.
@@ -209,7 +224,7 @@ public class SignatureResourceIT {
 
     @Test
     @Transactional
-    public void checkEmailIsRequired() throws Exception {
+    void checkEmailIsRequired() throws Exception {
         int databaseSizeBeforeTest = signatureRepository.findAll().size();
         // set the field null
         signature.setEmail(null);
@@ -217,10 +232,13 @@ public class SignatureResourceIT {
         // Create the Signature, which fails.
         SignatureDTO signatureDTO = signatureMapper.toDto(signature);
 
-
-        restSignatureMockMvc.perform(post("/api/signatures").with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(signatureDTO)))
+        restSignatureMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(signatureDTO))
+            )
             .andExpect(status().isBadRequest());
 
         List<Signature> signatureList = signatureRepository.findAll();
@@ -229,7 +247,7 @@ public class SignatureResourceIT {
 
     @Test
     @Transactional
-    public void checkNameIsRequired() throws Exception {
+    void checkNameIsRequired() throws Exception {
         int databaseSizeBeforeTest = signatureRepository.findAll().size();
         // set the field null
         signature.setName(null);
@@ -237,10 +255,13 @@ public class SignatureResourceIT {
         // Create the Signature, which fails.
         SignatureDTO signatureDTO = signatureMapper.toDto(signature);
 
-
-        restSignatureMockMvc.perform(post("/api/signatures").with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(signatureDTO)))
+        restSignatureMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(signatureDTO))
+            )
             .andExpect(status().isBadRequest());
 
         List<Signature> signatureList = signatureRepository.findAll();
@@ -249,12 +270,13 @@ public class SignatureResourceIT {
 
     @Test
     @Transactional
-    public void getAllSignatures() throws Exception {
+    void getAllSignatures() throws Exception {
         // Initialize the database
         signatureRepository.saveAndFlush(signature);
 
         // Get all the signatureList
-        restSignatureMockMvc.perform(get("/api/signatures?sort=id,desc"))
+        restSignatureMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(signature.getId().intValue())))
@@ -264,15 +286,16 @@ public class SignatureResourceIT {
             .andExpect(jsonPath("$.[*].replyName").value(hasItem(DEFAULT_REPLY_NAME)))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
     }
-    
+
     @Test
     @Transactional
-    public void getSignature() throws Exception {
+    void getSignature() throws Exception {
         // Initialize the database
         signatureRepository.saveAndFlush(signature);
 
         // Get the signature
-        restSignatureMockMvc.perform(get("/api/signatures/{id}", signature.getId()))
+        restSignatureMockMvc
+            .perform(get(ENTITY_API_URL_ID, signature.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(signature.getId().intValue()))
@@ -282,17 +305,17 @@ public class SignatureResourceIT {
             .andExpect(jsonPath("$.replyName").value(DEFAULT_REPLY_NAME))
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()));
     }
+
     @Test
     @Transactional
-    public void getNonExistingSignature() throws Exception {
+    void getNonExistingSignature() throws Exception {
         // Get the signature
-        restSignatureMockMvc.perform(get("/api/signatures/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restSignatureMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateSignature() throws Exception {
+    void putNewSignature() throws Exception {
         // Initialize the database
         signatureRepository.saveAndFlush(signature);
 
@@ -310,9 +333,13 @@ public class SignatureResourceIT {
             .status(UPDATED_STATUS);
         SignatureDTO signatureDTO = signatureMapper.toDto(updatedSignature);
 
-        restSignatureMockMvc.perform(put("/api/signatures").with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(signatureDTO)))
+        restSignatureMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, signatureDTO.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(signatureDTO))
+            )
             .andExpect(status().isOk());
 
         // Validate the Signature in the database
@@ -328,16 +355,21 @@ public class SignatureResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingSignature() throws Exception {
+    void putNonExistingSignature() throws Exception {
         int databaseSizeBeforeUpdate = signatureRepository.findAll().size();
+        signature.setId(count.incrementAndGet());
 
         // Create the Signature
         SignatureDTO signatureDTO = signatureMapper.toDto(signature);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restSignatureMockMvc.perform(put("/api/signatures").with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(signatureDTO)))
+        restSignatureMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, signatureDTO.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(signatureDTO))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Signature in the database
@@ -347,15 +379,208 @@ public class SignatureResourceIT {
 
     @Test
     @Transactional
-    public void deleteSignature() throws Exception {
+    void putWithIdMismatchSignature() throws Exception {
+        int databaseSizeBeforeUpdate = signatureRepository.findAll().size();
+        signature.setId(count.incrementAndGet());
+
+        // Create the Signature
+        SignatureDTO signatureDTO = signatureMapper.toDto(signature);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restSignatureMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(signatureDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Signature in the database
+        List<Signature> signatureList = signatureRepository.findAll();
+        assertThat(signatureList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamSignature() throws Exception {
+        int databaseSizeBeforeUpdate = signatureRepository.findAll().size();
+        signature.setId(count.incrementAndGet());
+
+        // Create the Signature
+        SignatureDTO signatureDTO = signatureMapper.toDto(signature);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restSignatureMockMvc
+            .perform(
+                put(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(signatureDTO))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Signature in the database
+        List<Signature> signatureList = signatureRepository.findAll();
+        assertThat(signatureList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateSignatureWithPatch() throws Exception {
+        // Initialize the database
+        signatureRepository.saveAndFlush(signature);
+
+        int databaseSizeBeforeUpdate = signatureRepository.findAll().size();
+
+        // Update the signature using partial update
+        Signature partialUpdatedSignature = new Signature();
+        partialUpdatedSignature.setId(signature.getId());
+
+        partialUpdatedSignature.replyEmail(UPDATED_REPLY_EMAIL).replyName(UPDATED_REPLY_NAME).status(UPDATED_STATUS);
+
+        restSignatureMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedSignature.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedSignature))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Signature in the database
+        List<Signature> signatureList = signatureRepository.findAll();
+        assertThat(signatureList).hasSize(databaseSizeBeforeUpdate);
+        Signature testSignature = signatureList.get(signatureList.size() - 1);
+        assertThat(testSignature.getEmail()).isEqualTo(DEFAULT_EMAIL);
+        assertThat(testSignature.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testSignature.getReplyEmail()).isEqualTo(UPDATED_REPLY_EMAIL);
+        assertThat(testSignature.getReplyName()).isEqualTo(UPDATED_REPLY_NAME);
+        assertThat(testSignature.getStatus()).isEqualTo(UPDATED_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateSignatureWithPatch() throws Exception {
+        // Initialize the database
+        signatureRepository.saveAndFlush(signature);
+
+        int databaseSizeBeforeUpdate = signatureRepository.findAll().size();
+
+        // Update the signature using partial update
+        Signature partialUpdatedSignature = new Signature();
+        partialUpdatedSignature.setId(signature.getId());
+
+        partialUpdatedSignature
+            .email(UPDATED_EMAIL)
+            .name(UPDATED_NAME)
+            .replyEmail(UPDATED_REPLY_EMAIL)
+            .replyName(UPDATED_REPLY_NAME)
+            .status(UPDATED_STATUS);
+
+        restSignatureMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedSignature.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedSignature))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Signature in the database
+        List<Signature> signatureList = signatureRepository.findAll();
+        assertThat(signatureList).hasSize(databaseSizeBeforeUpdate);
+        Signature testSignature = signatureList.get(signatureList.size() - 1);
+        assertThat(testSignature.getEmail()).isEqualTo(UPDATED_EMAIL);
+        assertThat(testSignature.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testSignature.getReplyEmail()).isEqualTo(UPDATED_REPLY_EMAIL);
+        assertThat(testSignature.getReplyName()).isEqualTo(UPDATED_REPLY_NAME);
+        assertThat(testSignature.getStatus()).isEqualTo(UPDATED_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingSignature() throws Exception {
+        int databaseSizeBeforeUpdate = signatureRepository.findAll().size();
+        signature.setId(count.incrementAndGet());
+
+        // Create the Signature
+        SignatureDTO signatureDTO = signatureMapper.toDto(signature);
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restSignatureMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, signatureDTO.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(signatureDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Signature in the database
+        List<Signature> signatureList = signatureRepository.findAll();
+        assertThat(signatureList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchSignature() throws Exception {
+        int databaseSizeBeforeUpdate = signatureRepository.findAll().size();
+        signature.setId(count.incrementAndGet());
+
+        // Create the Signature
+        SignatureDTO signatureDTO = signatureMapper.toDto(signature);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restSignatureMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(signatureDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Signature in the database
+        List<Signature> signatureList = signatureRepository.findAll();
+        assertThat(signatureList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamSignature() throws Exception {
+        int databaseSizeBeforeUpdate = signatureRepository.findAll().size();
+        signature.setId(count.incrementAndGet());
+
+        // Create the Signature
+        SignatureDTO signatureDTO = signatureMapper.toDto(signature);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restSignatureMockMvc
+            .perform(
+                patch(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(signatureDTO))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Signature in the database
+        List<Signature> signatureList = signatureRepository.findAll();
+        assertThat(signatureList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteSignature() throws Exception {
         // Initialize the database
         signatureRepository.saveAndFlush(signature);
 
         int databaseSizeBeforeDelete = signatureRepository.findAll().size();
 
         // Delete the signature
-        restSignatureMockMvc.perform(delete("/api/signatures/{id}", signature.getId()).with(csrf())
-            .accept(MediaType.APPLICATION_JSON))
+        restSignatureMockMvc
+            .perform(delete(ENTITY_API_URL_ID, signature.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

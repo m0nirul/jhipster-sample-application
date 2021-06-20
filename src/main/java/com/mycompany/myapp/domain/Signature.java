@@ -1,15 +1,12 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
+import com.mycompany.myapp.domain.enumeration.ValidationStatus;
+import java.io.Serializable;
 import javax.persistence.*;
 import javax.validation.constraints.*;
-
-import java.io.Serializable;
-
-import com.mycompany.myapp.domain.enumeration.ValidationStatus;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A Signature.
@@ -44,14 +41,13 @@ public class Signature implements Serializable {
     @Column(name = "status")
     private ValidationStatus status;
 
+    @JsonIgnoreProperties(value = { "signature" }, allowSetters = true)
     @OneToOne
-
     @MapsId
     @JoinColumn(name = "id")
     private SignatureValidation signatureValidation;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "signatures", allowSetters = true)
     private User owner;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -63,8 +59,13 @@ public class Signature implements Serializable {
         this.id = id;
     }
 
+    public Signature id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
     public Signature email(String email) {
@@ -77,7 +78,7 @@ public class Signature implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public Signature name(String name) {
@@ -90,7 +91,7 @@ public class Signature implements Serializable {
     }
 
     public String getReplyEmail() {
-        return replyEmail;
+        return this.replyEmail;
     }
 
     public Signature replyEmail(String replyEmail) {
@@ -103,7 +104,7 @@ public class Signature implements Serializable {
     }
 
     public String getReplyName() {
-        return replyName;
+        return this.replyName;
     }
 
     public Signature replyName(String replyName) {
@@ -116,7 +117,7 @@ public class Signature implements Serializable {
     }
 
     public ValidationStatus getStatus() {
-        return status;
+        return this.status;
     }
 
     public Signature status(ValidationStatus status) {
@@ -129,11 +130,11 @@ public class Signature implements Serializable {
     }
 
     public SignatureValidation getSignatureValidation() {
-        return signatureValidation;
+        return this.signatureValidation;
     }
 
     public Signature signatureValidation(SignatureValidation signatureValidation) {
-        this.signatureValidation = signatureValidation;
+        this.setSignatureValidation(signatureValidation);
         return this;
     }
 
@@ -142,17 +143,18 @@ public class Signature implements Serializable {
     }
 
     public User getOwner() {
-        return owner;
+        return this.owner;
     }
 
     public Signature owner(User user) {
-        this.owner = user;
+        this.setOwner(user);
         return this;
     }
 
     public void setOwner(User user) {
         this.owner = user;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -168,7 +170,8 @@ public class Signature implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

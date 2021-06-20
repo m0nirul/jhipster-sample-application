@@ -1,13 +1,14 @@
 package com.mycompany.myapp.domain;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
-import com.mycompany.myapp.web.rest.TestUtil;
 
-public class LinkTest {
+import com.mycompany.myapp.web.rest.TestUtil;
+import org.junit.jupiter.api.Test;
+
+class LinkTest {
 
     @Test
-    public void equalsVerifier() throws Exception {
+    void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(Link.class);
         Link link1 = new Link();
         link1.setId(1L);

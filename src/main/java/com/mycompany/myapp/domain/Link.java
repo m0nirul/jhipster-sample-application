@@ -1,12 +1,10 @@
 package com.mycompany.myapp.domain;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A Link.
@@ -38,8 +36,13 @@ public class Link implements Serializable {
         this.id = id;
     }
 
+    public Link id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public ZonedDateTime getZonedStartTime() {
-        return zonedStartTime;
+        return this.zonedStartTime;
     }
 
     public Link zonedStartTime(ZonedDateTime zonedStartTime) {
@@ -52,7 +55,7 @@ public class Link implements Serializable {
     }
 
     public ZonedDateTime getZonedDateTime() {
-        return zonedDateTime;
+        return this.zonedDateTime;
     }
 
     public Link zonedDateTime(ZonedDateTime zonedDateTime) {
@@ -63,6 +66,7 @@ public class Link implements Serializable {
     public void setZonedDateTime(ZonedDateTime zonedDateTime) {
         this.zonedDateTime = zonedDateTime;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -78,7 +82,8 @@ public class Link implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

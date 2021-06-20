@@ -1,14 +1,15 @@
 package com.mycompany.myapp.service.dto;
 
-import javax.validation.constraints.*;
-import java.io.Serializable;
 import com.mycompany.myapp.domain.enumeration.ValidationStatus;
+import java.io.Serializable;
+import java.util.Objects;
+import javax.validation.constraints.*;
 
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Signature} entity.
  */
 public class SignatureDTO implements Serializable {
-    
+
     private Long id;
 
     @NotNull
@@ -25,11 +26,10 @@ public class SignatureDTO implements Serializable {
 
     private ValidationStatus status;
 
+    private SignatureValidationDTO signatureValidation;
 
-    private Long signatureValidationId;
+    private UserDTO owner;
 
-    private String ownerId;
-    
     public Long getId() {
         return id;
     }
@@ -78,20 +78,20 @@ public class SignatureDTO implements Serializable {
         this.status = status;
     }
 
-    public Long getSignatureValidationId() {
-        return signatureValidationId;
+    public SignatureValidationDTO getSignatureValidation() {
+        return signatureValidation;
     }
 
-    public void setSignatureValidationId(Long signatureValidationId) {
-        this.signatureValidationId = signatureValidationId;
+    public void setSignatureValidation(SignatureValidationDTO signatureValidation) {
+        this.signatureValidation = signatureValidation;
     }
 
-    public String getOwnerId() {
-        return ownerId;
+    public UserDTO getOwner() {
+        return owner;
     }
 
-    public void setOwnerId(String userId) {
-        this.ownerId = userId;
+    public void setOwner(UserDTO owner) {
+        this.owner = owner;
     }
 
     @Override
@@ -103,12 +103,16 @@ public class SignatureDTO implements Serializable {
             return false;
         }
 
-        return id != null && id.equals(((SignatureDTO) o).id);
+        SignatureDTO signatureDTO = (SignatureDTO) o;
+        if (this.id == null) {
+            return false;
+        }
+        return Objects.equals(this.id, signatureDTO.id);
     }
 
     @Override
     public int hashCode() {
-        return 31;
+        return Objects.hash(this.id);
     }
 
     // prettier-ignore
@@ -121,8 +125,8 @@ public class SignatureDTO implements Serializable {
             ", replyEmail='" + getReplyEmail() + "'" +
             ", replyName='" + getReplyName() + "'" +
             ", status='" + getStatus() + "'" +
-            ", signatureValidationId=" + getSignatureValidationId() +
-            ", ownerId='" + getOwnerId() + "'" +
+            ", signatureValidation=" + getSignatureValidation() +
+            ", owner='" + getOwner() + "'" +
             "}";
     }
 }

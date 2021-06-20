@@ -1,13 +1,14 @@
 package com.mycompany.myapp.domain;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
-import com.mycompany.myapp.web.rest.TestUtil;
 
-public class SignatureValidationTest {
+import com.mycompany.myapp.web.rest.TestUtil;
+import org.junit.jupiter.api.Test;
+
+class SignatureValidationTest {
 
     @Test
-    public void equalsVerifier() throws Exception {
+    void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(SignatureValidation.class);
         SignatureValidation signatureValidation1 = new SignatureValidation();
         signatureValidation1.setId(1L);

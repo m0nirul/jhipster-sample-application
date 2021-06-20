@@ -1,14 +1,15 @@
 package com.mycompany.myapp.service.dto;
 
-import java.time.ZonedDateTime;
-import java.io.Serializable;
 import com.mycompany.myapp.domain.enumeration.ValidationStatus;
+import java.io.Serializable;
+import java.time.ZonedDateTime;
+import java.util.Objects;
 
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.SignatureValidation} entity.
  */
 public class SignatureValidationDTO implements Serializable {
-    
+
     private Long id;
 
     private String otp;
@@ -19,7 +20,6 @@ public class SignatureValidationDTO implements Serializable {
 
     private ValidationStatus status;
 
-    
     public Long getId() {
         return id;
     }
@@ -69,12 +69,16 @@ public class SignatureValidationDTO implements Serializable {
             return false;
         }
 
-        return id != null && id.equals(((SignatureValidationDTO) o).id);
+        SignatureValidationDTO signatureValidationDTO = (SignatureValidationDTO) o;
+        if (this.id == null) {
+            return false;
+        }
+        return Objects.equals(this.id, signatureValidationDTO.id);
     }
 
     @Override
     public int hashCode() {
-        return 31;
+        return Objects.hash(this.id);
     }
 
     // prettier-ignore

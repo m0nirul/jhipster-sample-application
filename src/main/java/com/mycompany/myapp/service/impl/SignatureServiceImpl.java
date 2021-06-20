@@ -1,21 +1,19 @@
 package com.mycompany.myapp.service.impl;
 
-import com.mycompany.myapp.service.SignatureService;
 import com.mycompany.myapp.domain.Signature;
 import com.mycompany.myapp.repository.SignatureRepository;
 import com.mycompany.myapp.repository.SignatureValidationRepository;
+import com.mycompany.myapp.service.SignatureService;
 import com.mycompany.myapp.service.dto.SignatureDTO;
 import com.mycompany.myapp.service.mapper.SignatureMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service Implementation for managing {@link Signature}.
@@ -32,7 +30,11 @@ public class SignatureServiceImpl implements SignatureService {
 
     private final SignatureValidationRepository signatureValidationRepository;
 
-    public SignatureServiceImpl(SignatureRepository signatureRepository, SignatureMapper signatureMapper, SignatureValidationRepository signatureValidationRepository) {
+    public SignatureServiceImpl(
+        SignatureRepository signatureRepository,
+        SignatureMapper signatureMapper,
+        SignatureValidationRepository signatureValidationRepository
+    ) {
         this.signatureRepository = signatureRepository;
         this.signatureMapper = signatureMapper;
         this.signatureValidationRepository = signatureValidationRepository;
@@ -42,28 +44,40 @@ public class SignatureServiceImpl implements SignatureService {
     public SignatureDTO save(SignatureDTO signatureDTO) {
         log.debug("Request to save Signature : {}", signatureDTO);
         Signature signature = signatureMapper.toEntity(signatureDTO);
-        Long signatureValidationId = signatureDTO.getSignatureValidationId();
+        Long signatureValidationId = signatureDTO.getSignatureValidation().getId();
         signatureValidationRepository.findById(signatureValidationId).ifPresent(signature::signatureValidation);
         signature = signatureRepository.save(signature);
         return signatureMapper.toDto(signature);
     }
 
     @Override
+    public Optional<SignatureDTO> partialUpdate(SignatureDTO signatureDTO) {
+        log.debug("Request to partially update Signature : {}", signatureDTO);
+
+        return signatureRepository
+            .findById(signatureDTO.getId())
+            .map(
+                existingSignature -> {
+                    signatureMapper.partialUpdate(existingSignature, signatureDTO);
+                    return existingSignature;
+                }
+            )
+            .map(signatureRepository::save)
+            .map(signatureMapper::toDto);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<SignatureDTO> findAll() {
         log.debug("Request to get all Signatures");
-        return signatureRepository.findAll().stream()
-            .map(signatureMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
+        return signatureRepository.findAll().stream().map(signatureMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
-
 
     @Override
     @Transactional(readOnly = true)
     public Optional<SignatureDTO> findOne(Long id) {
         log.debug("Request to get Signature : {}", id);
-        return signatureRepository.findById(id)
-            .map(signatureMapper::toDto);
+        return signatureRepository.findById(id).map(signatureMapper::toDto);
     }
 
     @Override

@@ -35,7 +35,21 @@
     "dtoSuffix": "DTO",
     "otherModules": [],
     "blueprints": [],
-    "prettierJava": true
+    "prettierJava": true,
+    "entities": [
+      "Region",
+      "Country",
+      "Location",
+      "Department",
+      "Task",
+      "Employee",
+      "Job",
+      "JobHistory",
+      "Signature",
+      "SignatureValidation",
+      "Link"
+    ],
+    "lastLiquibaseTimestamp": 1624195623000
   },
   "git-provider": "GitHub",
   "git-company": "m0nirul",

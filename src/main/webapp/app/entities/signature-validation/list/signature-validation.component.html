@@ -1,0 +1,84 @@
+<div>
+  <h2 id="page-heading" data-cy="SignatureValidationHeading">
+    <span>Signature Validations</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info mr-2" (click)="loadAll()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span>Refresh List</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-signature-validation"
+        [routerLink]="['/signature-validation/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span> Create a new Signature Validation </span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="signatureValidations?.length === 0">
+    <span>No signatureValidations found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="signatureValidations && signatureValidations.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr>
+          <th scope="col"><span>ID</span></th>
+          <th scope="col"><span>Otp</span></th>
+          <th scope="col"><span>Createdtime</span></th>
+          <th scope="col"><span>Valid Till</span></th>
+          <th scope="col"><span>Status</span></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let signatureValidation of signatureValidations; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/signature-validation', signatureValidation.id, 'view']">{{ signatureValidation.id }}</a>
+          </td>
+          <td>{{ signatureValidation.otp }}</td>
+          <td>{{ signatureValidation.createdtime | formatMediumDatetime }}</td>
+          <td>{{ signatureValidation.validTill | formatMediumDatetime }}</td>
+          <td>{{ signatureValidation.status }}</td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/signature-validation', signatureValidation.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline">View</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/signature-validation', signatureValidation.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(signatureValidation)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

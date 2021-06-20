@@ -1,7 +1,6 @@
 package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.service.dto.SignatureValidationDTO;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -9,7 +8,6 @@ import java.util.Optional;
  * Service Interface for managing {@link com.mycompany.myapp.domain.SignatureValidation}.
  */
 public interface SignatureValidationService {
-
     /**
      * Save a signatureValidation.
      *
@@ -17,6 +15,14 @@ public interface SignatureValidationService {
      * @return the persisted entity.
      */
     SignatureValidationDTO save(SignatureValidationDTO signatureValidationDTO);
+
+    /**
+     * Partially updates a signatureValidation.
+     *
+     * @param signatureValidationDTO the entity to update partially.
+     * @return the persisted entity.
+     */
+    Optional<SignatureValidationDTO> partialUpdate(SignatureValidationDTO signatureValidationDTO);
 
     /**
      * Get all the signatureValidations.
@@ -30,7 +36,6 @@ public interface SignatureValidationService {
      * @return the {@link List} of entities.
      */
     List<SignatureValidationDTO> findAllWhereSignatureIsNull();
-
 
     /**
      * Get the "id" signatureValidation.

@@ -1,20 +1,20 @@
 package com.mycompany.myapp.service.dto;
 
-import java.time.ZonedDateTime;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
+import java.util.Objects;
 
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Link} entity.
  */
 public class LinkDTO implements Serializable {
-    
+
     private Long id;
 
     private ZonedDateTime zonedStartTime;
 
     private ZonedDateTime zonedDateTime;
 
-    
     public Long getId() {
         return id;
     }
@@ -48,12 +48,16 @@ public class LinkDTO implements Serializable {
             return false;
         }
 
-        return id != null && id.equals(((LinkDTO) o).id);
+        LinkDTO linkDTO = (LinkDTO) o;
+        if (this.id == null) {
+            return false;
+        }
+        return Objects.equals(this.id, linkDTO.id);
     }
 
     @Override
     public int hashCode() {
-        return 31;
+        return Objects.hash(this.id);
     }
 
     // prettier-ignore

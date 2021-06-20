@@ -18,6 +18,7 @@ import org.springframework.context.annotation.*;
 @Configuration
 @EnableCaching
 public class CacheConfiguration {
+
     private GitProperties gitProperties;
     private BuildProperties buildProperties;
     private final javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration;
@@ -50,6 +51,18 @@ public class CacheConfiguration {
             createCache(cm, com.mycompany.myapp.domain.Signature.class.getName());
             createCache(cm, com.mycompany.myapp.domain.SignatureValidation.class.getName());
             createCache(cm, com.mycompany.myapp.domain.Link.class.getName());
+            createCache(cm, com.mycompany.myapp.domain.Region.class.getName());
+            createCache(cm, com.mycompany.myapp.domain.Country.class.getName());
+            createCache(cm, com.mycompany.myapp.domain.Location.class.getName());
+            createCache(cm, com.mycompany.myapp.domain.Department.class.getName());
+            createCache(cm, com.mycompany.myapp.domain.Department.class.getName() + ".employees");
+            createCache(cm, com.mycompany.myapp.domain.Task.class.getName());
+            createCache(cm, com.mycompany.myapp.domain.Task.class.getName() + ".jobs");
+            createCache(cm, com.mycompany.myapp.domain.Employee.class.getName());
+            createCache(cm, com.mycompany.myapp.domain.Employee.class.getName() + ".jobs");
+            createCache(cm, com.mycompany.myapp.domain.Job.class.getName());
+            createCache(cm, com.mycompany.myapp.domain.Job.class.getName() + ".tasks");
+            createCache(cm, com.mycompany.myapp.domain.JobHistory.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

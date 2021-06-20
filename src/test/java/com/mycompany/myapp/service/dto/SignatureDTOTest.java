@@ -1,13 +1,14 @@
 package com.mycompany.myapp.service.dto;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
-import com.mycompany.myapp.web.rest.TestUtil;
 
-public class SignatureDTOTest {
+import com.mycompany.myapp.web.rest.TestUtil;
+import org.junit.jupiter.api.Test;
+
+class SignatureDTOTest {
 
     @Test
-    public void dtoEqualsVerifier() throws Exception {
+    void dtoEqualsVerifier() throws Exception {
         TestUtil.equalsVerifier(SignatureDTO.class);
         SignatureDTO signatureDTO1 = new SignatureDTO();
         signatureDTO1.setId(1L);
